@@ -1,38 +1,71 @@
 clear 
- close all
- disp('Welcome to the Projectile Motion Plotter');
- disp('This projects the motion for a tennis ball with and without air resistance');
- Vx = input('Please input the horizontal velocity [m/s]: ');            
- Vy = input('Please input the vertical velocity [m/s]: ');              
- %Sets up intial conditions
-  V = sqrt(Vx^2 + Vy^2);   %Determines V by combining v of both axes 
-  G = 9.80665;             %m/s^2 Acceleration due to Gravity       
-  DC = 0.8;                %Drag coefficient
-  Area = 0.0033;           %m^2 cross section area of a tennis ball
-  Mass = 0.057;            %Kg mass of tennis ball
-  x(1) = 0;                %intial x postion
-  y(1) = 0;                %inital y postion
-  xf(1) = 0;               %inital xf postion
-  yf(1) = 0;               %intial yf postion
-  AP = 1.2;                %kg/m^3 Air Density @ Sea  Level
-  D = AP*DC*Area/2;        %constant needed for drag calculations created    
-  t(1) = 0;                %sets intial time
-  dt = 0.01;               %s set the intervals at which time will be evalutated
-  i = 1;                   %sets counter/index
- %Starts a loop for Projectile Motion with Drag    
-    while min(y)> -0.01;                                          
-       t = t + dt;                                               
-       i = i + 1;                                                
-       xf(i) = xf(i-1)+ Vx.*dt;                                  
-       AxD = - ( D / Mass ) * V * Vx;                            
-       AyD = -G - ( D / Mass ) * V * Vy;                         
-       Vx = Vx + AxD * dt;                                       
-       Vy = Vy + AyD * dt;                                       
-       x(i) = x(i-1) + Vx * dt + 0.5 * AxD * dt^2;               
-       y(i) = y(i-1) + Vy * dt + 0.5 * AyD * dt^2;               
-   end;
- plot(x,y,'b'), hold on;               %plots the Projectile Motion with Drag
- plot(xf,y,'r'), hold off;             %plots the Projectile Motion without Drag
- xlabel('Horizontal Distance (m)');    %labels the x axis "Horizontal Distance (m)"
- ylabel('Vertical Distance (m)');      %Labels the y axis "Vertical Distance (m)"
- title('Projectile Motion Paths');     %Gives a Title "Projectile Motion Paths"
+clc
+close all
+
+m = 0.00971984;                 %Mass of bullet in kg
+v = 887;                        %Muzzle Velocity of the bullet in m/s
+dia = 0.008;                    %Diameter of the bullet in m
+rho = 1.225;                    %Density of air in kg/m^3
+c = 0.295;                      %Drag coefficient of bullet
+A = 3.14*dia*dia/4;             %Area of bullet head
+d =rho*c*A/2;                   %Drag due to air
+theta = 0;                      
+target = input('Please input the distance of target (in m) : ');
+if target <= 2500
+    while theta<=45
+        clear x;
+        clear x1;
+        clear y;
+        clear y1;
+        vx = v*cosd(theta);
+        vy = v*sind(theta);
+        t=0;
+        g = 9.81;
+        dt = 0.1;
+        x(1)=0;
+        x1(1)=0;
+        y(1)=1;
+        y1(1)=1;
+        i=1;
+        while min(y1)>=1
+            i=i+1;
+            t = t + dt;
+            x(i) = v*cosd(theta)*t;
+            y(i) = v*sind(theta)*t - (g*t^2)/2;
+
+            v1 = sqrt(vx^2 + vy^2);
+            ax = -d*v1*vx/m;
+            ay = -g - d*v1*vy/m;
+            x1(i) = x1(i-1) + vx*dt + (ax*dt^2)/2;
+            y1(i) = y1(i-1) + vy*dt + (ay*dt^2)/2;
+            vx = vx + ax*dt;
+            vy = vy + ay*dt;
+        end
+        if max(x1) >= target
+            X = sprintf('We have to fire at an angle = %f',theta);
+            disp(X);
+            break;
+        end
+        theta = theta + 0.1;
+    end        
+    plot(x,y,'b') ,hold on;
+    plot(x1,y1,'r') , hold off;
+    daspect([1 1 1]);
+    xlabel('Horizontal Distance (m)');    
+    ylabel('Vertical Distance (m)');      
+    title('Projectile Motion Paths');
+else
+    display('The target cannot be reached.');
+end
+    
+    
+    
+    
+    
+   
+    
+    
+    
+    
+    
+
